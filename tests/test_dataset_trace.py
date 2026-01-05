@@ -1,6 +1,7 @@
 import tempfile
 import traceback
 from pathlib import Path
+from typing import Callable
 from inference_perf.apis import LazyLoadInferenceAPIData, CompletionAPIData, ChatCompletionAPIData
 from inference_perf.datagen.base import LazyLoadDataMixin
 from inference_perf.datagen.dataset_trace_datagen import DatasetTraceDataGenerator
@@ -8,7 +9,7 @@ from inference_perf.utils.trace_reader import DatasetTraceReader
 from inference_perf.config import APIConfig, DataConfig, APIType, TraceFormat, TraceConfig, DataGenType
 
 
-def test_dataset_trace_reader_basic():
+def test_dataset_trace_reader_basic() -> None:
     """Test basic JSONL parsing with text_input and output_length."""
     content = """{"text_input": "What is the capital of France?", "output_length": 20}
 {"text_input": "Explain quantum computing in simple terms.", "output_length": 100}
@@ -35,7 +36,7 @@ def test_dataset_trace_reader_basic():
         temp_path.unlink()
 
 
-def test_dataset_trace_reader_without_output_length():
+def test_dataset_trace_reader_without_output_length() -> None:
     """Test JSONL parsing when output_length is omitted."""
     content = """{"text_input": "What is the capital of France?"}
 {"text_input": "Another prompt without output length"}
@@ -59,7 +60,7 @@ def test_dataset_trace_reader_without_output_length():
         temp_path.unlink()
 
 
-def test_dataset_trace_reader_mixed():
+def test_dataset_trace_reader_mixed() -> None:
     """Test JSONL parsing with mixed entries (some with output_length, some without)."""
     content = """{"text_input": "Prompt with length", "output_length": 50}
 {"text_input": "Prompt without length"}
@@ -83,7 +84,7 @@ def test_dataset_trace_reader_mixed():
         temp_path.unlink()
 
 
-def test_dataset_trace_reader_stream_entries():
+def test_dataset_trace_reader_stream_entries() -> None:
     """Test streaming entries from JSONL file."""
     content = """{"text_input": "First prompt", "output_length": 10}
 {"text_input": "Second prompt", "output_length": 20}
@@ -107,7 +108,7 @@ def test_dataset_trace_reader_stream_entries():
         temp_path.unlink()
 
 
-def test_dataset_trace_reader_skips_empty_lines():
+def test_dataset_trace_reader_skips_empty_lines() -> None:
     """Test that empty lines are skipped."""
     content = """{"text_input": "First prompt"}
 
@@ -129,7 +130,7 @@ def test_dataset_trace_reader_skips_empty_lines():
         temp_path.unlink()
 
 
-def test_dataset_trace_reader_handles_invalid_json():
+def test_dataset_trace_reader_handles_invalid_json() -> None:
     """Test that invalid JSON lines are skipped with a warning."""
     content = """{"text_input": "Valid prompt"}
 {invalid json here}
@@ -153,7 +154,7 @@ def test_dataset_trace_reader_handles_invalid_json():
         temp_path.unlink()
 
 
-def test_dataset_trace_reader_handles_missing_text_input():
+def test_dataset_trace_reader_handles_missing_text_input() -> None:
     """Test that entries missing text_input field are skipped."""
     content = """{"text_input": "Valid prompt"}
 {"output_length": 50}
@@ -175,7 +176,7 @@ def test_dataset_trace_reader_handles_missing_text_input():
         temp_path.unlink()
 
 
-def test_dataset_trace_datagen_completion_api():
+def test_dataset_trace_datagen_completion_api() -> None:
     """Test DatasetTraceDataGenerator with Completion API."""
     content = """{"text_input": "What is the capital of France?", "output_length": 20}
 {"text_input": "Explain quantum computing.", "output_length": 100}
@@ -210,7 +211,7 @@ def test_dataset_trace_datagen_completion_api():
         temp_path.unlink()
 
 
-def test_dataset_trace_datagen_chat_api():
+def test_dataset_trace_datagen_chat_api() -> None:
     """Test DatasetTraceDataGenerator with Chat API."""
     content = """{"text_input": "What is the capital of France?", "output_length": 20}
 {"text_input": "Explain quantum computing.", "output_length": 100}
@@ -246,7 +247,7 @@ def test_dataset_trace_datagen_chat_api():
         temp_path.unlink()
 
 
-def test_dataset_trace_datagen_without_output_length():
+def test_dataset_trace_datagen_without_output_length() -> None:
     """Test DatasetTraceDataGenerator when output_length is not specified."""
     content = """{"text_input": "What is the capital of France?"}
 {"text_input": "Explain quantum computing."}
@@ -275,7 +276,7 @@ def test_dataset_trace_datagen_without_output_length():
         temp_path.unlink()
 
 
-def test_dataset_trace_datagen_cycles_entries():
+def test_dataset_trace_datagen_cycles_entries() -> None:
     """Test that DatasetTraceDataGenerator cycles through entries."""
     content = """{"text_input": "First prompt", "output_length": 10}
 {"text_input": "Second prompt", "output_length": 20}
@@ -308,7 +309,7 @@ def test_dataset_trace_datagen_cycles_entries():
         temp_path.unlink()
 
 
-def test_dataset_trace_datagen_requires_trace_config():
+def test_dataset_trace_datagen_requires_trace_config() -> None:
     """Test that DatasetTraceDataGenerator raises error when trace config is missing."""
     api_config = APIConfig(type=APIType.Completion)
     data_config = DataConfig(type=DataGenType.DatasetTrace, trace=None)
@@ -321,7 +322,7 @@ def test_dataset_trace_datagen_requires_trace_config():
         print("PASSED: test_dataset_trace_datagen_requires_trace_config")
 
 
-def test_dataset_trace_datagen_requires_correct_format():
+def test_dataset_trace_datagen_requires_correct_format() -> None:
     """Test that DatasetTraceDataGenerator raises error for wrong trace format."""
     content = """{"text_input": "Test prompt"}
 """
@@ -345,7 +346,7 @@ def test_dataset_trace_datagen_requires_correct_format():
         temp_path.unlink()
 
 
-def test_dataset_trace_datagen_empty_file():
+def test_dataset_trace_datagen_empty_file() -> None:
     """Test that DatasetTraceDataGenerator raises error for empty file."""
     content = ""
     with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".jsonl") as f:
@@ -368,7 +369,7 @@ def test_dataset_trace_datagen_empty_file():
 
 
 if __name__ == "__main__":
-    tests = [
+    tests: list[Callable[[], None]] = [
         test_dataset_trace_reader_basic,
         test_dataset_trace_reader_without_output_length,
         test_dataset_trace_reader_mixed,
