@@ -173,7 +173,7 @@ class DatasetTraceReader:
                         continue
                     data = json.loads(line)
                     if "text_input" not in data:
-                        raise ValueError(f"Missing required field 'text_input'")
+                        raise ValueError(f"Missing required field 'text_input' in {file_path} line {line_num}")
                     text_input = data["text_input"]
                     output_length = data.get("output_length")
                     if output_length is not None:

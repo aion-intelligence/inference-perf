@@ -4,7 +4,7 @@ from pathlib import Path
 from inference_perf.apis import LazyLoadInferenceAPIData, CompletionAPIData, ChatCompletionAPIData
 from inference_perf.datagen.base import LazyLoadDataMixin
 from inference_perf.datagen.dataset_trace_datagen import DatasetTraceDataGenerator
-from inference_perf.utils.trace_reader import DatasetTraceReader, DatasetTraceEntry
+from inference_perf.utils.trace_reader import DatasetTraceReader
 from inference_perf.config import APIConfig, DataConfig, APIType, TraceFormat, TraceConfig, DataGenType
 
 
@@ -315,7 +315,7 @@ def test_dataset_trace_datagen_requires_trace_config():
 
     try:
         DatasetTraceDataGenerator(api_config=api_config, config=data_config)
-        assert False, "Expected ValueError to be raised"
+        raise AssertionError("Expected ValueError to be raised")
     except ValueError as e:
         assert "requires a trace config" in str(e)
         print("PASSED: test_dataset_trace_datagen_requires_trace_config")
@@ -337,7 +337,7 @@ def test_dataset_trace_datagen_requires_correct_format():
         data_config = DataConfig(type=DataGenType.DatasetTrace, trace=trace_config)
 
         DatasetTraceDataGenerator(api_config=api_config, config=data_config)
-        assert False, "Expected ValueError to be raised"
+        raise AssertionError("Expected ValueError to be raised")
     except ValueError as e:
         assert "DatasetTrace" in str(e)
         print("PASSED: test_dataset_trace_datagen_requires_correct_format")
@@ -359,7 +359,7 @@ def test_dataset_trace_datagen_empty_file():
         data_config = DataConfig(type=DataGenType.DatasetTrace, trace=trace_config)
 
         DatasetTraceDataGenerator(api_config=api_config, config=data_config)
-        assert False, "Expected ValueError to be raised"
+        raise AssertionError("Expected ValueError to be raised")
     except ValueError as e:
         assert "No valid entries" in str(e)
         print("PASSED: test_dataset_trace_datagen_empty_file")
@@ -391,7 +391,7 @@ if __name__ == "__main__":
         try:
             test()
             passed += 1
-        except Exception as e:
+        except Exception:
             print(f"FAILED: {test.__name__}")
             traceback.print_exc()
             failed += 1
