@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import itertools
+import json
 import logging
 from inference_perf.apis import InferenceAPIData, CompletionAPIData, ChatCompletionAPIData, ChatMessage
 from inference_perf.utils.custom_tokenizer import CustomTokenizer
@@ -77,6 +78,11 @@ class HFShareGPTDataGenerator(DataGenerator):
             yield from self.get_chat_data()
         raise Exception("Unsupported API type")
 
+    def _parse_conversation(self, conversation: object) -> dict:
+        if isinstance(conversation, str):
+            return json.loads(conversation)
+        return conversation  # type: ignore[return-value]
+
     def get_completion_data(self) -> Generator[InferenceAPIData, None, None]:
         if self.tokenizer is None:
             raise Exception("Tokenizer is required for completion API of HFShareGPTDataGenerator")
@@ -91,8 +97,8 @@ class HFShareGPTDataGenerator(DataGenerator):
                 continue
 
             try:
-                prompt = data[self.data_key][0].get(self.content_key)
-                completion = data[self.data_key][1].get(self.content_key)
+                prompt = self._parse_conversation(data[self.data_key][0]).get(self.content_key)
+                completion = self._parse_conversation(data[self.data_key][1]).get(self.content_key)
                 if not prompt:
                     continue
                 completion_tokens = self.tokenizer.count_tokens(completion)
@@ -128,8 +134,8 @@ class HFShareGPTDataGenerator(DataGenerator):
             yield ChatCompletionAPIData(
                 messages=[
                     ChatMessage(
-                        role=SHAREGPT_HF_CHAT_ROLE_MAP.get(conversation[self.role_key], "user"),
-                        content=conversation[self.content_key],
+                        role=SHAREGPT_HF_CHAT_ROLE_MAP.get(self._parse_conversation(conversation)[self.role_key], "user"),
+                        content=self._parse_conversation(conversation)[self.content_key],
                     )
                     for conversation in data[self.data_key]
                 ]
