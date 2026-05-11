@@ -1,0 +1,50 @@
+api:
+  type: chat
+  streaming: true
+
+data:
+  type: synthetic
+  input_distribution:
+    min: 512
+    max: 2048
+    mean: 1024    # long prompts to stress prefill
+    std: 256
+  output_distribution:
+    min: 1
+    max: 1
+    mean: 1       # single output token so latency is almost entirely prefill
+    std: 0
+
+load:
+  type: constant
+  interval: 15
+  stages:
+  - rate: 1
+    duration: 60
+  - rate: 2
+    duration: 60
+  - rate: 4
+    duration: 60
+
+server:
+  type: vllm
+  model_name: HuggingFaceTB/SmolLM2-135M-Instruct
+  base_url: http://0.0.0.0:8000
+
+tokenizer:
+  pretrained_model_name_or_path: HuggingFaceTB/SmolLM2-135M-Instruct
+
+metrics:
+  type: prometheus
+  prometheus:
+    url: http://localhost:9090
+    scrape_interval: 15
+
+report:
+  request_lifecycle:
+    summary: true
+    per_stage: true
+    per_request: true
+  prometheus:
+    summary: true
+    per_stage: true
