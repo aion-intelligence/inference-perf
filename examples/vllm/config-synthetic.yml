@@ -8,12 +8,13 @@ load:
     duration: 30
 api:
   type: completion
+  streaming: true 
 server:
   type: vllm
-  model_name: HuggingFaceTB/SmolLM2-135M-Instruct
+  model_name: meta-llama/Llama-3.1-8B-Instruct
   base_url: http://0.0.0.0:8000
 tokenizer:
-  pretrained_model_name_or_path: HuggingFaceTB/SmolLM2-135M-Instruct
+  pretrained_model_name_or_path: meta-llama/Llama-3.1-8B-Instruct
 data:
   type: synthetic
   input_distribution:
