@@ -8,9 +8,9 @@ load:
     duration: 30
 api:
   type: completion
-  
+
 server:
-  type: vllm
+  type: max
   model_name: meta-llama/Llama-3.1-8B-Instruct
   base_url: http://0.0.0.0:8000
 tokenizer:
