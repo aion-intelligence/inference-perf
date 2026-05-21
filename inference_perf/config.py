@@ -92,6 +92,7 @@ class ModelServerType(Enum):
     VLLM = "vllm"
     SGLANG = "sglang"
     TGI = "tgi"
+    MAX = "max"
     MOCK = "mock"
 
 

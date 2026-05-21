@@ -15,6 +15,7 @@ from .base import ModelServerClient, ModelServerClientSession
 from .mock_client import MockModelServerClient
 from .vllm_client import vLLMModelServerClient
 from .sglang_client import SGlangModelServerClient
+from .max_client import MAXModelServerClient
 
 
 __all__ = [
@@ -23,4 +24,5 @@ __all__ = [
     "MockModelServerClient",
     "vLLMModelServerClient",
     "SGlangModelServerClient",
+    "MAXModelServerClient",
 ]
